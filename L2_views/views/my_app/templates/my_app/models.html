@@ -1,0 +1,60 @@
+{% extends 'my_app/base.html' %}
+
+{% block head %} {% endblock %}
+
+{% block content %}
+<div class="container" >
+    <h5>Add model</h5>
+    {% include 'my_app/edit_create_model_form.html' %}
+</div>
+<p></p>
+{% if models.count == 0 %}
+    <div class="container" justify-content="center">
+        <h3>No models</h3>
+    </div>
+{% else %}
+    <div class="container" justify-content="center">
+        <h5>Models count: {{ models.count }}</h5>
+    </div>
+    <div class="row row-cols-md-auto row-cols-lg-auto g-4">
+    {% for model in models %}
+        <div class="col">
+        <div class="card" style="width: 16rem;">
+            <div class="card-body">
+                <h5 class="card-title">
+                    # {{ forloop.counter }}: {{ model.name }}
+                </h5>
+                <h6 class="card-subtitle mb-2 text-body-secondary">
+                    created @: {{ model.created_at }}
+                </h6>
+                <p class="card-text">
+                    {{ model.description|truncatewords:20 }}
+                </p>
+            </div>
+            <div class="card-footer" text-center>
+                <div class="row">
+                    <div class="col">
+                        <a href="{% url 'my_app:one_model' model.id %}"
+                         class="card-link">Details
+                        </a>
+                    </div>
+                    <div class="col">
+                        <form method="post"
+                              action="{% url 'my_app:delete_model' model.id %}">
+                          {% csrf_token %}
+                          <button class="btn btn-outline-danger"
+                                  type="submit">
+                            Delete
+                          </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+        <p></p>
+
+    {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}

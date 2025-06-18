@@ -1,0 +1,49 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+<main class="container py-4">
+    <h1 class>All posts</h1>
+
+    <section class="mb-5">
+        <button class="btn btn-primary" type="button"
+                onclick="location.href='{% url 'blog:post_create' %}'">
+            Add post
+        </button>
+    </section>
+
+    {% if posts.count == 0 %}
+        <p class="text-muted">No posts yet</p>
+    {% else %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for post in posts %}
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ post.title }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">
+                            {{ post.author }} @{{ post.created_at }}
+                        </h6>
+                        <p class="card-text flex-grow-1">
+                            {{ post.content }}
+                        </p>
+                        <div class="mt-4 d-flex gap-2">
+                           <p>👁️ {{ post.views }}</p>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between" >
+                            <a href="{% url 'blog:post_details' post.id %}"
+                               class="btn btn-sm btn-primary">Show more</a>
+                            <button class="btn btn-outline-danger" type="submit"
+                                    onclick="location.href='{% url 'blog:post_delete' post.id %}'">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% include 'blog/post_pagination.html' %}
+</main>
+{% endblock %}
+

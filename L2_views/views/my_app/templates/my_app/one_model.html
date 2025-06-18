@@ -1,0 +1,16 @@
+{% extends 'my_app/base.html' %}
+
+{% block content %}
+    <div class="container" justify-content="center">
+        <h1>Model: {{ model.name }}</h1>
+        <h2>Description: {{ model.description }}</h2>
+        <h2>Created @: {{ model.created_at }}</h2>
+        <form method="post" action="{% url 'my_app:delete_model' model.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Delete</button>
+            <p> </p>
+        </form>
+        <h3>Modify</h3>
+        {% include 'my_app/edit_create_model_form.html' %}
+    </div>
+{% endblock %}

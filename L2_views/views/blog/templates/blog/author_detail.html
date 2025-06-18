@@ -1,0 +1,29 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+<div class="container">
+
+  <div class="row">
+    <div class="col">
+      <h1>{{ author.name }}</h1>
+      <p class="card-text mb-3"> Posts: {{ author.posts.count }}</p>
+      <p class="card-subtitle mb-5 text-muted">
+        Joined @ {{ author.joined_at }}
+      </p>
+    </div>
+  </div>
+
+  <div class="Container">
+    {% for post in author.posts.all %}
+    <div class="card-bodycd shadow-sm mb-lg-4">
+      <p class="card-subtitle mb-2">
+        <a href="{% url 'blog:post_details' post.pk %}">{{ post.title }}
+        </a> 👁️ {{ post.views }}
+      </p>
+      <p class="card-text">{{ post.content }}</p>
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+<main class="container py-4">
+   <div class="card shadow-sm mb-5">
+       <div class="card-body">
+           <h1 class="card-title">{{ post.title }}</h1>
+           <p class="card-subtitle mb-2 text-muted">
+              <a href="{% url 'blog:author_detail' post.author.id %}">{{ post.author }}</a>
+               posted @ {{ post.created_at }}
+           </p>
+           <p class="card-subtitle mb-2 text-muted">
+               Category: {{ post.category.title }}
+           </p>
+           <p class="card-subtitle mb-2 text-muted">
+              {% for tag in post.tags.all %}
+                   {{ tag.title }}{% if not forloop.last %}, {% endif %}
+               {% endfor %}
+           </p>
+           <div class="mt-4 d-flex py-0">
+               <p>👁️{{ post.annotaded_views }}</p>
+           </div>
+           <p class="card-text mt-3">
+               {{ post.content }}
+           </p>
+
+           <div class="mt-4 d-flex gap-2">
+               <a href="{% url 'blog:post_list' %}" class="btn btn-secondary">
+                   All posts
+               </a>
+               <button class="btn btn-danger"   type="submit"
+                       onclick="window.location.href='{% url 'blog:post_delete' post.id %}'">
+                       Delete
+               </button>
+           </div>
+       </div>
+   </div>
+
+    <div class="card shadow-sm">
+        <button class="btn btn-primary" type="button"
+                onclick="location.href='{% url 'blog:post_edit' post.id %}'">
+            Edit
+        </button>
+    </div>
+    <div class="card shadow-sm mt-4">
+        {% include 'blog/comment_create.html' %}
+        <div class="card-body">
+            <h2 class="card-title">Comments</h2>
+            {% for comment in post.comments.all %}
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <p class="card-subtitle mb-2 text-muted">
+                            {{ comment.author }} @ {{ comment.created_at }}</p>
+                        <h4 class="card-text">{{ comment.content }}</h4>
+
+
+                    </div>
+                </div>
+            {% empty %}
+                <p>No comments yet</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</main>
+{% endblock %}
