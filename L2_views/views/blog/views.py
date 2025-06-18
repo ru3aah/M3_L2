@@ -29,7 +29,6 @@ class IndexView(TemplateView):
         return context
 
 
-
 class PostDetailView(DetailView):
     template_name = 'blog/post_details.html'
     model = Post
@@ -61,7 +60,8 @@ class PostListView(ListView):
 class PostCreateView(CreateView):
     model = Post
     template_name = 'blog/post_create.html'
-    fields = ['title', 'content', 'status', 'author']
+    fields = ['title', 'category', 'content', 'author', 'status']
+
     #success_url = reverse_lazy('blog:post_list')
 
 

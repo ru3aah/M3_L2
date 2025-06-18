@@ -21,7 +21,8 @@ class Post(models.Model):
     content = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES,
+                              default='draft')
     views = models.PositiveIntegerField(default=0)
     author = models.ForeignKey('Author',
                                related_name='posts',

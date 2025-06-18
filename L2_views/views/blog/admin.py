@@ -23,7 +23,7 @@ class PostAdmin(admin.ModelAdmin):
 
     fieldsets = (
             ('Basic data', {
-                'fields': ('title', 'author', 'status', 'category', 'tags')
+                'fields': ('title', 'category', 'author', 'status')
             }),
             ('Post content', {
                 'fields': ('content', 'views'),
@@ -49,7 +49,6 @@ class PostAdmin(admin.ModelAdmin):
     def publish(self, request, queryset):
         self.message_user(request, "Post has been published")
         queryset.update(status=Post.PUBLISHED)
-
 
 
     def make_draft(self, request, queryset):
