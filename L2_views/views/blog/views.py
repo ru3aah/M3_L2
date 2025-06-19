@@ -2,7 +2,7 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 from django.db.models import Avg, F
 from django.db.models.aggregates import Count, Min, Max
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404, render
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, \
     UpdateView, DeleteView
@@ -81,6 +81,18 @@ def create_comment(request: HttpRequest, post_id: int) -> HttpResponse:
     comment = Comment.objects.create(content=request.POST.get('content'),
                                      post=post, author=Author.objects.first())
     return redirect('blog:post_details',post.id)
+
+def contacts(request: HttpRequest) -> HttpResponse:
+    print(request.method)
+    if request.method == 'POST':
+        print(request.POST.get('name'))
+        print(request.POST.get('email'))
+        print(request.POST.get('subject'))
+        print(request.POST.get('message'))
+    else :
+        print(request.GET)
+
+    return render(request, 'blog/contacts.html')
 
 
 class AuthorDetailView(DetailView):

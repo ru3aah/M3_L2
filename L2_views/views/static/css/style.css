@@ -11,14 +11,15 @@ body {
    Шапка (Navbar)
    =========================== */
 .navbar {
-  background-color: #0056b3;
+  background-color: #3783d5;
 }
 .navbar .navbar-brand,
 .navbar .nav-link {
-  color: #666 !important;
+
+  color: #ffffff !important;
 }
 .navbar .nav-link:hover {
-  color: #777 !important;
+  color: #9ee17e !important;
 }
 
 /* ===========================
