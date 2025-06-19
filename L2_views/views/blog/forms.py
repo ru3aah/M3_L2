@@ -34,3 +34,17 @@ class ContactForm(forms.Form):
                                         'placeholder': 'Enter your Message'}
                             )
     )
+
+
+    def clean_message(self):
+        message = self.cleaned_data['message']
+        if 'spam' in message.lower():
+            raise forms.ValidationError('Message cannot contain spam')
+        return message
+
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        if 'spam' in name.lower():
+            raise forms.ValidationError('Name cannot contain spam')
+        return name
+

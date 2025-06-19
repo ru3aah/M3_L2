@@ -96,8 +96,8 @@ def contacts(request: HttpRequest) -> HttpResponse:
     else :
         form = ContactForm(request.GET)
 
-    return render(request, 'blog/contacts.html',
-                  {'form': form})
+    return (render(request, 'blog/contacts.html',
+                  {'form': form}))
 
 
 class AuthorDetailView(DetailView):
