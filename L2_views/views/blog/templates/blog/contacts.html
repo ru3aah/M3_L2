@@ -5,18 +5,20 @@
         <h1>Contact us</h1>
         <form method="post" class="mb-3" action="{% url 'blog:contacts' %}">
             {% csrf_token %}
-            <input type="text" class="form-control" name="name"
-                   placeholder="Your name">
-            <p></p>
-            <input type="email" class="form-control" name="email"
-                   placeholder="e-mail">
-            <p></p>
-            <input type="text" class="form-control" name="subject"
-                   placeholder="subject">
-            <p></p>
-            <textarea class="form-control" name="message" rows="3"
-                      placeholder="message"></textarea>
-            <p></p>
+            {{ form.as_p }}
+
+<!--            <input type="text" class="form-control" name="name"-->
+<!--                   placeholder="Your name">-->
+<!--            <p></p>-->
+<!--            <input type="email" class="form-control" name="email"-->
+<!--                   placeholder="e-mail">-->
+<!--            <p></p>-->
+<!--            <input type="text" class="form-control" name="subject"-->
+<!--                   placeholder="subject">-->
+<!--            <p></p>-->
+<!--            <textarea class="form-control" name="message" rows="3"-->
+<!--                      placeholder="message"></textarea>-->
+<!--            <p></p>-->
             <button type="submit" class="btn btn-primary">Send</button>
         </form>
     </div>

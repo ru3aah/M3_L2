@@ -7,6 +7,7 @@ from django.urls import reverse_lazy
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, \
     UpdateView, DeleteView
 
+from .forms import ContactForm
 from .models import Post, Comment, Author
 
 
@@ -85,14 +86,18 @@ def create_comment(request: HttpRequest, post_id: int) -> HttpResponse:
 def contacts(request: HttpRequest) -> HttpResponse:
     print(request.method)
     if request.method == 'POST':
-        print(request.POST.get('name'))
-        print(request.POST.get('email'))
-        print(request.POST.get('subject'))
-        print(request.POST.get('message'))
-    else :
-        print(request.GET)
+        form=ContactForm(request.POST)
+        if form.is_valid():
+            print(form.cleaned_data)
+        else:
+            print(form.errors)
+            form.add_error(None, 'Form is not valid')
 
-    return render(request, 'blog/contacts.html')
+    else :
+        form = ContactForm(request.GET)
+
+    return render(request, 'blog/contacts.html',
+                  {'form': form})
 
 
 class AuthorDetailView(DetailView):
