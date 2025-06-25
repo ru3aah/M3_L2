@@ -32,8 +32,10 @@
               <p class="nav-link">{{ user }}</p>
             </li>
             <li class="nav-item d-flex">
-              <a class="nav-link"
-                 href="{% url 'users:logout' %}"> Logout </a>
+                <form method="post" action="{% url 'users:logout' %}">
+                    {% csrf_token %}
+                    <input type="submit" value="Logout" class="btn btn-login">
+                </form>
             </li>
         {% else %}
              <li class="nav-item">
