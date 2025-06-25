@@ -3,10 +3,11 @@
     <form method="post"
           action="{% url 'blog:comment_create' post.id %}">
         {% csrf_token %}
-        <div class="mb-3">
-            <textarea class="form-control" id="content" name="content"
-                      placeholder="Type your comment here" rows="3"></textarea>
-        </div>
+<!--        <div class="mb-3">-->
+<!--            <textarea class="form-control" id="content" name="content"-->
+<!--                      placeholder="Type your comment here" rows="3"></textarea>-->
+<!--        </div>-->
+        {{ comment_form.as_p }}
         <button type="submit" class="btn btn-primary">Add</button>
     </form>
 </div>

@@ -1,5 +1,9 @@
 from django import forms
 from django.core.validators import MaxLengthValidator, MinLengthValidator
+from django.db.models import Model
+
+from .models import Post, Author, Category, Comment
+
 
 class ContactForm(forms.Form):
     name = forms.CharField(max_length=100, required=False,
@@ -42,9 +46,51 @@ class ContactForm(forms.Form):
             raise forms.ValidationError('Message cannot contain spam')
         return message
 
+
     def clean_name(self):
         name = self.cleaned_data['name']
         if 'spam' in name.lower():
             raise forms.ValidationError('Name cannot contain spam')
         return name
 
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = '__all__'
+        exclude = ['views']
+        widgets = {
+            'title': forms.TextInput(attrs={'class':'form-control'}),
+            'content': forms.Textarea(attrs={'class':'form-control'}),
+            'status': forms.Select(attrs={'class':'form-control'}),
+            'category': forms.Select(attrs={'class':'form-control'}),
+            'author': forms.Select(attrs={'class':'form-control'}),
+        }
+        error_messages = {
+            'title': {
+                'required': 'Title is required',
+                'max_length': 'Title cannot be greater than 100 characters'
+            },
+            'content': {
+                'required': 'Content is required',
+                'max_length': 'Content cannot be greater than 1000 characters'
+            },
+        }
+        labels = {
+            'title': 'Title:',
+            'content': 'Content:',
+            'status': 'Status:',
+            'category': 'Category:',
+            'author': 'Author:',
+        }
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(attrs={'class':'form-control', 'rows':
+                3, 'placeholder': 'Your comment here',}),
+        }
+        labels = {
+            'content': 'Comment:',
+        }

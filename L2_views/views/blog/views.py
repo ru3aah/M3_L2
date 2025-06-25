@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, \
     UpdateView, DeleteView
 
-from .forms import ContactForm
+from .forms import ContactForm, PostForm, CommentForm
 from .models import Post, Comment, Author
 
 
@@ -46,6 +46,11 @@ class PostDetailView(DetailView):
         obj.save()
         return obj
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['comment_form'] = CommentForm()
+        return context
+
 
 class PostListView(ListView):
     model = Post
@@ -60,8 +65,9 @@ class PostListView(ListView):
 
 class PostCreateView(CreateView):
     model = Post
+    form_class = PostForm
     template_name = 'blog/post_create.html'
-    fields = ['title', 'category', 'content', 'author', 'status']
+    #fields = ['title', 'category', 'content', 'author', 'status']
 
     #success_url = reverse_lazy('blog:post_list')
 
