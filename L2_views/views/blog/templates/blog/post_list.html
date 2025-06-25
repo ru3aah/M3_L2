@@ -23,17 +23,27 @@
                         <h6 class="card-subtitle mb-2 text-muted">
                             {{ post.author }} @{{ post.created_at }}
                         </h6>
+                        {% if post.image %}
+                            <img src="{{ post.image.url }}" class="img-fluid"
+                                 width="100 px" alt="Post image">
+                        {% else %}
+                            <div class="bg-light d-flex align-items-center justify-content-center"
+                                 style="height: 50px;">
+                                <span class="text-muted">No image</span>
+                            </div>
+                        {% endif %}
                         <p class="card-text flex-grow-1">
                             {{ post.content }}
                         </p>
                         <div class="mt-4 d-flex gap-2">
                            <p>👁️ {{ post.views }}</p>
                         </div>
-                        <div class="card-footer d-flex justify-content-between" >
+                        <div class="card-footer d-flex justify-content-between">
                             <a href="{% url 'blog:post_details' post.id %}"
                                class="btn btn-sm btn-primary">Show more</a>
                             <button class="btn btn-outline-danger" type="submit"
-                                    onclick="location.href='{% url 'blog:post_delete' post.id %}'">
+                                    onclick="location.href=
+                                    '{% url 'blog:post_delete' post.id %}'">
                                 Delete
                             </button>
                         </div>
@@ -46,4 +56,3 @@
     {% include 'blog/post_pagination.html' %}
 </main>
 {% endblock %}
-

@@ -74,9 +74,17 @@ class PostCreateView(CreateView):
 
 class PostUpdateView(UpdateView):
     model = Post
+    form_class = PostForm
     template_name = 'blog/post_edit.html'
-    fields = ['title', 'content', 'status']
     pk_url_kwarg = 'id'
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if self.request.method in ('POST', 'PUT'):
+            kwargs.update({
+                'files': self.request.FILES,
+            })
+        return kwargs
 
 class PostDeleteView(DeleteView):
     model = Post
@@ -85,8 +93,14 @@ class PostDeleteView(DeleteView):
 
 def create_comment(request: HttpRequest, post_id: int) -> HttpResponse:
     post = get_object_or_404(Post, id=post_id)
-    comment = Comment.objects.create(content=request.POST.get('content'),
-                                     post=post, author=Author.objects.first())
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.author = Author.objects.first()
+            comment.save()
+            return redirect('blog:post_details', post.id)
     return redirect('blog:post_details',post.id)
 
 def contacts(request: HttpRequest) -> HttpResponse:

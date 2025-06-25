@@ -6,7 +6,7 @@
         <div class="card-body">
             {{ form.non_field_errors }}
             <h1 class="card-title">New post</h1>
-            <form method="post">
+            <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ form.as_p }}
                 <button type="submit" class="btn btn-primary">Save</button>

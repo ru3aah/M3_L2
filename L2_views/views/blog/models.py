@@ -1,4 +1,6 @@
 from django.db import models
+from .validators import validate_spam, CommentMaxLengthValidator
+from django.urls import reverse
 
 class PublishedManager(models.Manager):
     def get_queryset(self):
@@ -19,6 +21,7 @@ class Post(models.Model):
 
     title = models.CharField(max_length=200, db_index=True)
     content = models.TextField(blank=True)
+    image = models.ImageField(upload_to='images/', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES,
@@ -37,7 +40,7 @@ class Post(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return f'/posts/{self.id}'
+        return reverse('blog:post_details', kwargs={'id': self.pk})
 
 class Category(models.Model):
     title = models.CharField(max_length=100)
@@ -53,7 +56,8 @@ class Category(models.Model):
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE,
                              related_name='comments')
-    content = models.TextField()
+    content = models.TextField(validators=[validate_spam, 
+                                           CommentMaxLengthValidator()])
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     author = models.ForeignKey('Author', related_name='comments',
@@ -74,7 +78,7 @@ class Author(models.Model):
 
 
 class Tag(models.Model):
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=100, validators=[validate_spam])
     posts = models.ManyToManyField(Post, related_name='tags')
 
     def __str__(self):

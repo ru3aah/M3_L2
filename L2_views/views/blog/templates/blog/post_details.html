@@ -20,6 +20,18 @@
            <div class="mt-4 d-flex py-0">
                <p>👁️{{ post.annotaded_views }}</p>
            </div>
+           <div class="mt-4 d-flex py-0">
+               {% if post.image %}
+                   <img src="{{ post.image.url }}" alt="post image"
+                        class="img-fluid" width="300px">
+               {% else %}
+                   <div class="bg-light d-flex align-items-center justify-content-center" 
+                        style="height: 50px">
+                       <span class="text-muted">No image available</span>
+                   </div>
+               {% endif %}
+           </div>
+
            <p class="card-text mt-3">
                {{ post.content }}
            </p>
@@ -29,8 +41,8 @@
                    All posts
                </a>
                <button class="btn btn-danger"   type="submit"
-                       onclick="window.location.href='{% url 'blog:post_delete' post.id %}'">
-                       Delete
+                       onclick="window.location.href=
+                       '{% url 'blog:post_delete' post.id %}'"> Delete
                </button>
            </div>
        </div>
@@ -52,8 +64,6 @@
                         <p class="card-subtitle mb-2 text-muted">
                             {{ comment.author }} @ {{ comment.created_at }}</p>
                         <h4 class="card-text">{{ comment.content }}</h4>
-
-
                     </div>
                 </div>
             {% empty %}

@@ -4,17 +4,20 @@
     <div class="container">
         <h1>Contact us</h1>
         <form method="post" class="mb-3" action="{% url 'blog:contacts' %}">
+            {{ form.non_field_errors }}
             {% csrf_token %}
-            {{ form.as_p }}
 
-<!--    possible option-->
-<!--            {% for field in form %}-->
-<!--            <div class="mb-3">-->
-<!--                {{ field.errors }}-->
-<!--                {{ field.label_tag }}-->
-<!--                {{ field }}-->
-<!--            </div>-->
-<!--            {% endfor %}-->
+<!--   possible option         {{ form.as_p }}-->
+
+<!--    -possible option-->
+            {% for field in form %}
+            <div class="mb-3">
+                {{ field.label_tag }}
+                {{ field }}
+                {{ field.errors }}
+            </div>
+          {% endfor %}
+
 
 <!--possible option-->
 <!--            <input type="text" class="form-control" name="name"-->

@@ -1,8 +1,9 @@
 from django import forms
 from django.core.validators import MaxLengthValidator, MinLengthValidator
-from django.db.models import Model
+from django.template.defaultfilters import default
 
 from .models import Post, Author, Category, Comment
+from .validators import validate_spam
 
 
 class ContactForm(forms.Form):
@@ -14,7 +15,8 @@ class ContactForm(forms.Form):
                         ), validators=[MinLengthValidator(2,
                             'Name must be greater than 2 characters'),
                                     MaxLengthValidator(100,
-                            'Name must be less than 100 characters')
+                            'Name must be less than 100 characters'),
+                                       validate_spam
                                        ]
     )
     email = forms.EmailField(label='E-mail',
@@ -54,29 +56,34 @@ class ContactForm(forms.Form):
         return name
 
 class PostForm(forms.ModelForm):
+    title = forms.CharField(validators=[validate_spam])
+    content = forms.CharField(validators=[validate_spam],
+                              widget=forms.Textarea())
+
     class Meta:
         model = Post
-        fields = '__all__'
-        exclude = ['views']
+        fields = ['title', 'image', 'content', 'status', 'category',
+                  'author']
         widgets = {
-            'title': forms.TextInput(attrs={'class':'form-control'}),
+            'title': forms.TextInput(attrs={
+            'class':'form-control'}),
+            'image': forms.FileInput(attrs={'class':'form-control'}),
             'content': forms.Textarea(attrs={'class':'form-control'}),
-            'status': forms.Select(attrs={'class':'form-control'}),
+            'status': forms.Select(attrs={'class':'form-control'},
+                                   choices=Post.STATUS_CHOICES),
             'category': forms.Select(attrs={'class':'form-control'}),
             'author': forms.Select(attrs={'class':'form-control'}),
         }
         error_messages = {
             'title': {
                 'required': 'Title is required',
-                'max_length': 'Title cannot be greater than 100 characters'
+                'max_length': 'Title cannot be greater than 200 characters'
             },
-            'content': {
-                'required': 'Content is required',
-                'max_length': 'Content cannot be greater than 1000 characters'
-            },
+            'content': {'required': 'Content is required'},
         }
         labels = {
             'title': 'Title:',
+            'image': 'Logo:',
             'content': 'Content:',
             'status': 'Status:',
             'category': 'Category:',
@@ -85,12 +92,20 @@ class PostForm(forms.ModelForm):
 
 class CommentForm(forms.ModelForm):
     class Meta:
-        model = Post
+        model = Comment
         fields = ['content']
         widgets = {
-            'content': forms.Textarea(attrs={'class':'form-control', 'rows':
-                3, 'placeholder': 'Your comment here',}),
+            'content': forms.Textarea(attrs={
+                'class': 'form-control', 
+                'rows': 3, 
+                'placeholder': 'Your comment here'
+            }),
         }
         labels = {
             'content': 'Comment:',
+        }
+        error_messages = {
+            'content': {
+                'required': 'Please enter your comment.',
+            }
         }
