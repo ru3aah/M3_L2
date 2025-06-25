@@ -4,13 +4,13 @@
   <h1>Login</h1>
   <form method="post" class="mb-3" action="{% url 'users:login' %}">
     {% csrf_token %}
-<!--    {{ form.as_p }}-->
-    <input type="text" class="form-control" placeholder="Login" name="username">
-    <p></p>
-    <input type="password" class="form-control" placeholder="Password"
-           name="password">
+  {{ form.as_p }}
     <p></p>
     <button type="submit" class="btn btn-login">Login</button>
   </form>
+</div>
+<div class="container">
+  <p>Don't have an account? <a href="{% url 'users:register' %}">Register</a>
+  </p>
 </div>
 {% endblock %}
