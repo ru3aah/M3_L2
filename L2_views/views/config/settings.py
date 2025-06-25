@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 from os import getenv
 
-from django.conf.global_settings import MEDIA_URL
 from dotenv import load_dotenv
 
 
@@ -47,6 +46,7 @@ INSTALLED_APPS = [
 
     'my_app',
     'blog',
+    'users'
 ]
 
 MIDDLEWARE = [

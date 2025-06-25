@@ -105,6 +105,7 @@ def create_comment(request: HttpRequest, post_id: int) -> HttpResponse:
 
 def contacts(request: HttpRequest) -> HttpResponse:
     print(request.method)
+    print(request.user)
     if request.method == 'POST':
         form=ContactForm(request.POST)
         if form.is_valid():
