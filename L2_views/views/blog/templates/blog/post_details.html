@@ -40,20 +40,22 @@
                <a href="{% url 'blog:post_list' %}" class="btn btn-secondary">
                    All posts
                </a>
-               <button class="btn btn-danger"   type="submit"
-                       onclick="window.location.href=
-                       '{% url 'blog:post_delete' post.id %}'"> Delete
-               </button>
+               <a href="{% url 'blog:post_delete' post.id %}" class="btn btn-danger">
+                   Delete Post
+               </a>
            </div>
        </div>
    </div>
 
     <div class="card shadow-sm">
-        <button class="btn btn-primary" type="button"
-                onclick="location.href='{% url 'blog:post_edit' post.id %}'">
-            Edit
-        </button>
+        <div class="card-body">
+            <button class="btn btn-primary" type="button"
+                    onclick="location.href='{% url 'blog:post_edit' post.id %}'">
+                Edit Post
+            </button>
+        </div>
     </div>
+    
     <div class="card shadow-sm mt-4">
         {% include 'blog/comment_create.html' %}
         <div class="card-body">
@@ -61,9 +63,20 @@
             {% for comment in post.comments.all %}
                 <div class="card shadow-sm mb-3">
                     <div class="card-body">
-                        <p class="card-subtitle mb-2 text-muted">
-                            {{ comment.author }} @ {{ comment.created_at }}</p>
-                        <h4 class="card-text">{{ comment.content }}</h4>
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <p class="card-subtitle mb-2 text-muted">
+                                    {{ comment.author }} @ {{ comment.created_at }}
+                                </p>
+                                <h4 class="card-text">{{ comment.content }}</h4>
+                            </div>
+                            <div class="ms-2">
+                                <a href="{% url 'blog:comment_delete' comment.id %}" 
+                                   class="btn btn-outline-danger btn-sm">
+                                    Delete
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             {% empty %}

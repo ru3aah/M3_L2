@@ -10,10 +10,12 @@ urlpatterns = [
     path('posts/create/', views.PostCreateView.as_view(), name='post_create'),
     path('posts/<int:id>/update/', views.PostUpdateView.as_view(),
          name='post_edit'),
-    path('post/<int:pk>/delete/', views.PostDeleteView.as_view(),
+    path('posts/<int:id>/delete/', views.PostDeleteView.as_view(),  # Fixed: changed from 'post/<int:pk>' to 'posts/<int:id>'
          name='post_delete'),
     path('posts/<int:post_id>/comment/', views.create_comment,
          name='comment_create'),
+    path('comments/<int:id>/delete/', views.DeleteCommentView.as_view(),  # Added: missing comment delete URL
+         name='comment_delete'),
     path('authors/<int:pk>/', views.AuthorDetailView.as_view(),
          name='author_detail'),
     path('contacts/', views.contacts, name='contacts')

@@ -1,3 +1,5 @@
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.db.models import Avg, F
 from django.db.models.aggregates import Count, Min, Max
@@ -63,7 +65,7 @@ class PostListView(ListView):
     #    return Post.objects.filter(is_published=True)
     # ordering = ['-created_at']
 
-class PostCreateView(CreateView):
+class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     form_class = PostForm
     template_name = 'blog/post_create.html'
@@ -72,7 +74,7 @@ class PostCreateView(CreateView):
     #success_url = reverse_lazy('blog:post_list')
 
 
-class PostUpdateView(UpdateView):
+class PostUpdateView(LoginRequiredMixin, UpdateView):
     model = Post
     form_class = PostForm
     template_name = 'blog/post_edit.html'
@@ -86,11 +88,12 @@ class PostUpdateView(UpdateView):
             })
         return kwargs
 
-class PostDeleteView(DeleteView):
+class PostDeleteView(LoginRequiredMixin, DeleteView):
     model = Post
     template_name = 'blog/post_delete.html'
     success_url = reverse_lazy('blog:post_list')
 
+@login_required
 def create_comment(request: HttpRequest, post_id: int) -> HttpResponse:
     post = get_object_or_404(Post, id=post_id)
     if request.method == 'POST':
@@ -131,3 +134,12 @@ class AuthorDetailView(DetailView):
         return super().get_queryset().prefetch_related('posts').annotate(
             post_count = Count('posts')
         )
+
+class DeleteCommentView(LoginRequiredMixin, DeleteView):
+    model = Comment
+    template_name = 'blog/comment_delete.html'
+    pk_url_kwarg = 'id'  # Add this line to match your URL parameter
+
+    def get_success_url(self):
+        return reverse_lazy('blog:post_details', kwargs={'id':
+                                                  self.object.post.id})

@@ -1,0 +1,17 @@
+{% extends 'blog/base.html' %}
+{% block content %}
+<div class="container">
+  <h1>Login</h1>
+  <form method="post" class="mb-3" action="{% url 'users:login' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="text" class="form-control" placeholder="Login" name="username">
+    <p></p>
+    <input type="password" class="form-control" placeholder="Password"
+           name="password">
+    <p></p>
+    <button type="submit" class="btn btn-login">Login</button>
+  </form>
+</div>
+
+{% endblock %}
