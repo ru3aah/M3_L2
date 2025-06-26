@@ -25,37 +25,28 @@
                    <img src="{{ post.image.url }}" alt="post image"
                         class="img-fluid" width="300px">
                {% else %}
-                   <div class="bg-light d-flex align-items-center justify-content-center" 
-                        style="height: 50px">
+                   <div class="bg-light d-flex align-items-center justify-content-center"
+                        style="height: 30px">
                        <span class="text-muted">No image available</span>
                    </div>
                {% endif %}
            </div>
-
-           <p class="card-text mt-3">
-               {{ post.content }}
-           </p>
-
+           <p class="card-text mt-3">{{ post.content }}</p>
            <div class="mt-4 d-flex gap-2">
-               <a href="{% url 'blog:post_list' %}" class="btn btn-secondary">
-                   All posts
-               </a>
-               <a href="{% url 'blog:post_delete' post.id %}" class="btn btn-danger">
-                   Delete Post
-               </a>
+               <a href="{% url 'blog:post_list' %}"
+                  class="btn btn-secondary">All posts</a>
+
+               {% if user.is_authenticated %}
+                   <a href="{% url 'blog:post_edit' post.id %}"
+                      class="btn btn-primary">Edit Post</a>
+                   <a href="{% url 'blog:post_delete' post.id %}"
+                      class="btn btn-danger">Delete Post</a>
+               {% endif %}
+
            </div>
        </div>
    </div>
 
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <button class="btn btn-primary" type="button"
-                    onclick="location.href='{% url 'blog:post_edit' post.id %}'">
-                Edit Post
-            </button>
-        </div>
-    </div>
-    
     <div class="card shadow-sm mt-4">
         {% include 'blog/comment_create.html' %}
         <div class="card-body">
@@ -71,10 +62,12 @@
                                 <h4 class="card-text">{{ comment.content }}</h4>
                             </div>
                             <div class="ms-2">
-                                <a href="{% url 'blog:comment_delete' comment.id %}" 
-                                   class="btn btn-outline-danger btn-sm">
-                                    Delete
-                                </a>
+
+                                {% if user.is_authenticated %}
+                                    <a href="{% url 'blog:comment_delete' comment.id %}"
+                                   class="btn btn-outline-danger btn-sm">Delete</a>
+                                {% endif %}
+
                             </div>
                         </div>
                     </div>

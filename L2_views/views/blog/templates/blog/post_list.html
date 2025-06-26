@@ -43,11 +43,14 @@
                         <div class="card-footer d-flex justify-content-between">
                             <a href="{% url 'blog:post_details' post.id %}"
                                class="btn btn-sm btn-primary">Show more</a>
+
+                            {% if user.is_authenticated %}
                             <button class="btn btn-outline-danger" type="submit"
                                     onclick="location.href=
                                     '{% url 'blog:post_delete' post.id %}'">
                                 Delete
                             </button>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
