@@ -62,7 +62,7 @@
                <a href="{% url 'blog:post_list' %}"
                   class="btn btn-secondary">All posts</a>
 
-               {% if user.is_authenticated and user == post.author %}
+               {% if user.is_authenticated and user == post.author or user.is_superuser %}
                    <a href="{% url 'blog:post_edit' pk=post.id %}"
                       class="btn btn-primary">Edit Post</a>
                    <a href="{% url 'blog:post_delete' pk=post.id %}"
@@ -106,9 +106,9 @@
                                 </div>
                             </div>
                             <div class="ms-2">
-                                {% if user.is_authenticated and user == comment.author %}
+                                {% if user.is_authenticated and user == comment.author or user.is_superuser %}
                                     <a href="{% url 'blog:comment_delete' pk=comment.id %}"
-                                   class="btn btn-outline-danger btn-sm">Delete</a>
+                                       class="btn btn-outline-danger btn-sm">Delete</a>
                                 {% endif %}
                             </div>
                         </div>

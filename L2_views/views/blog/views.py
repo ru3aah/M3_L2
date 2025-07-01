@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.staticfiles.storage import staticfiles_storage
+from django.contrib.auth.mixins import LoginRequiredMixin, \
+    PermissionRequiredMixin
 from django.db.models import Avg, F
 from django.db.models.aggregates import Count, Min, Max
 from django.http import HttpRequest, HttpResponse
@@ -12,6 +12,7 @@ from django.views.generic import TemplateView, ListView, DetailView, CreateView,
 
 from .forms import ContactForm, PostForm, CommentForm
 from .models import Post, Comment
+from .mixins import MessageHandlerFormMixin, IsAuthorMixin
 
 # Get the User model dynamically
 User = get_user_model()
@@ -37,6 +38,20 @@ class IndexView(TemplateView):
         
         context['stats'] = stats
         context['categories'] = Post.objects.values('category__title')
+        return context
+
+
+class ProfileView(DetailView):
+    model = User
+    template_name = 'users/profile.html'
+    context_object_name = 'user'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.get_object()
+        # Add user's posts and comments to context if needed
+        context['posts'] = user.posts.all().order_by('-created_at')
+        context['comments'] = user.comments.all().order_by('-created_at')
         return context
 
 
@@ -68,10 +83,6 @@ class PostListView(ListView):
     ordering = ['-created_at']
 
 
-class MessageHandlerFormMixin:
-    pass
-
-
 class PostCreateView(LoginRequiredMixin, CreateView, MessageHandlerFormMixin):
     model = Post
     form_class = PostForm
@@ -82,10 +93,12 @@ class PostCreateView(LoginRequiredMixin, CreateView, MessageHandlerFormMixin):
         return super().form_valid(form)
     
     def get_success_url(self):
-        return reverse('blog:post_details', kwargs={'pk': self.object.pk})
+        return reverse('blog:post_details',
+                       kwargs={'pk': self.object.pk})
 
 
-class PostUpdateView(LoginRequiredMixin, UpdateView):
+class PostUpdateView(UpdateView, LoginRequiredMixin,
+                     IsAuthorMixin, MessageHandlerFormMixin):
     model = Post
     form_class = PostForm
     template_name = 'blog/post_edit.html'
@@ -99,10 +112,21 @@ class PostUpdateView(LoginRequiredMixin, UpdateView):
         return kwargs
     
     def get_success_url(self):
-        return reverse('blog:post_details', kwargs={'pk': self.object.pk})
+        return reverse('blog:post_details',
+                       kwargs={'pk': self.object.pk})
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if self.object.author != self.request.user:
+            raise PermissionError('You are not allowed to edit this post')
+        return super().get(request, *args, **kwargs)
+
+    # def form_valid(self, form):
+    #     form.instance.author = self.request.user
+    #     return super().form_valid(form)
 
 
-class PostDeleteView(LoginRequiredMixin, DeleteView):
+class PostDeleteView( DeleteView, LoginRequiredMixin, IsAuthorMixin):
     model = Post
     template_name = 'blog/post_delete.html'
     success_url = reverse_lazy('blog:post_list')
@@ -135,12 +159,14 @@ def contacts(request: HttpRequest) -> HttpResponse:
     else:
         form = ContactForm(request.GET)
 
-    return render(request, 'blog/contacts.html', {'form': form})
+    return render(request, 'blog/contacts.html',
+                  {'form': form})
 
 
-class DeleteCommentView(LoginRequiredMixin, DeleteView):
+class DeleteCommentView(DeleteView, LoginRequiredMixin, IsAuthorMixin):
     model = Comment
     template_name = 'blog/comment_delete.html'
 
     def get_success_url(self):
-        return reverse_lazy('blog:post_details', kwargs={'pk': self.object.post.id})
+        return reverse_lazy('blog:post_details',
+                            kwargs={'pk': self.object.post.id})

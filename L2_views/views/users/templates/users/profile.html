@@ -13,7 +13,7 @@
   </div>
 
   <div class="Container">
-    <p>Post in total {{ user.posts.count }}:</p>
+    <h5 class="text-info-emphasis"a>Post in total {{ user.posts.count }}:</h5>
     {% for post in user.posts.all %}
     <div class="card-bodycd shadow-sm mb-lg-4">
       <p class="card-subtitle mb-2">
@@ -21,12 +21,14 @@
         <a href="{% url 'blog:post_details' post.pk %}">
            {{ post.title }} </a>
       </p>
+      {% empty %}
+      <p>No posts yet</p>
     </div>
     {% endfor %}
   </div>
 
   <div class="Container">
-    <p>Comments in total {{ user.comments.count }}:</p>
+    <h5 class="text-info-emphasis">Comments in total {{ user.comments.count }}:</h5>
     {% for comment in user.comments.all %}
     <div class="card-bodycd shadow-sm mb-lg-4">
       <p class="card-subtitle mb-2">
@@ -36,6 +38,8 @@
           {{ comment.post.title }}
         </a>
       </p>
+      {% empty %}
+      <p>No comments yet</p>
     </div>
     {% endfor %}
   </div>
