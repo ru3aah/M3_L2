@@ -28,14 +28,37 @@
         </li>
 
         {% if user.is_authenticated %}
-            <li class="nav-item d-flex">
-              <p class="nav-link">{{ user }}</p>
-            </li>
-            <li class="nav-item d-flex">
-                <form method="post" action="{% url 'users:logout' %}">
-                    {% csrf_token %}
-                    <input type="submit" value="Logout" class="btn btn-login">
-                </form>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" 
+                   id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <!-- User Avatar -->
+                    <div class="me-2">
+                        {% if user.avatar %}
+                            <img src="{{ user.avatar.url }}" alt="{{ user.username }}" 
+                                 class="rounded-circle" 
+                                 style="width: 32px; height: 32px; object-fit: cover; border: 2px solid rgba(255,255,255,0.3);">
+                        {% else %}
+                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" 
+                                 style="width: 32px; height: 32px; border: 2px solid rgba(255,255,255,0.3);">
+                                <i class="fas fa-user text-muted" style="font-size: 14px;"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    {{ user.username }}
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="{% url 'users:profile' %}"><i class="fas fa-user me-2"></i>Profile</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <form method="post" action="{% url 'users:logout' %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="dropdown-item">
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                            </button>
+                        </form>
+                    </li>
+                </ul>
             </li>
         {% else %}
              <li class="nav-item">
@@ -43,8 +66,6 @@
                      href="{% url 'users:login' %}"> Login </a>
              </li>
         {% endif %}
-
-
 
       </ul>
     </div>

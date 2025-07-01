@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Post, Comment, Author, Tag, Category
+from .models import Post, Comment, Tag, Category
 
 class InlineCommentAdmin(admin.TabularInline):
     model = Comment
@@ -92,11 +92,7 @@ class CommentAdmin(admin.ModelAdmin):
         return (super().get_queryset(request).
                 select_related('author', 'post'))
 
-@admin.register(Author)
-class AuthorAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'joined_at')
-    list_display_links = ('id', 'name')
-    search_fields = ('name', )
+
 
 #admin.site.register(Comment)
 #admin.site.register(Author)

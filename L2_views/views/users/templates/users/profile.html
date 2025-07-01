@@ -1,0 +1,45 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+<div class="container">
+
+  <div class="row">
+    <div class="col">
+      <h1>{{ user.name }}</h1>
+      <p class="card-subtitle mb-5 text-muted">
+        Joined @ {{ user.date_joined }}
+      </p>
+    </div>
+  </div>
+
+  <div class="Container">
+    <p>Post in total {{ user.posts.count }}:</p>
+    {% for post in user.posts.all %}
+    <div class="card-bodycd shadow-sm mb-lg-4">
+      <p class="card-subtitle mb-2">
+       {{ post.created_at }} 👁️{{ post.views }}
+        <a href="{% url 'blog:post_details' post.pk %}">
+           {{ post.title }} </a>
+      </p>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="Container">
+    <p>Comments in total {{ user.comments.count }}:</p>
+    {% for comment in user.comments.all %}
+    <div class="card-bodycd shadow-sm mb-lg-4">
+      <p class="card-subtitle mb-2">
+        {{ comment.created_at }} {{ comment.content }} to post by
+        {{ comment.post.author }}
+        <a href="{% url 'blog:post_details' comment.post.pk %}">
+          {{ comment.post.title }}
+        </a>
+      </p>
+    </div>
+    {% endfor %}
+  </div>
+
+
+</div>
+{% endblock %}

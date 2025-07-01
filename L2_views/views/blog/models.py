@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 from .validators import validate_spam, CommentMaxLengthValidator
 from django.urls import reverse
@@ -25,9 +26,9 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES,
-                              default='draft')
+                              default=PUBLISHED)
     views = models.PositiveIntegerField(default=0)
-    author = models.ForeignKey('Author',
+    author = models.ForeignKey(get_user_model(),
                                related_name='posts',
                                on_delete=models.CASCADE)
     category = models.ForeignKey('Category', related_name='posts',
@@ -60,7 +61,7 @@ class Comment(models.Model):
                                            CommentMaxLengthValidator()])
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    author = models.ForeignKey('Author', related_name='comments',
+    author = models.ForeignKey(get_user_model(), related_name='comments',
                                 on_delete=models.CASCADE)
     def __str__(self):
         return self.content
@@ -69,12 +70,7 @@ class Comment(models.Model):
         ordering = ['-created_at']
 
 
-class Author(models.Model):
-    name = models.CharField(max_length=100)
-    joined_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return self.name
 
 
 class Tag(models.Model):

@@ -1,16 +1,140 @@
 {% extends 'blog/base.html' %}
 {% block content %}
 <div class="container">
-<h1>New user registration</h1>
-<form method="post" class="mb-3" action="{% url 'users:register' %}">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-login">Submit</button>
-</form>
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h1 class="card-title text-center mb-4">New User Registration</h1>
+                    
+                    <form method="post" enctype="multipart/form-data" action="{% url 'users:register' %}">
+                        {% csrf_token %}
+
+                        <!-- Email Field -->
+                        <div class="form-group mb-3">
+                            {{ form.email.label_tag }}
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.email.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Avatar Section -->
+                        <div class="form-group mb-4 text-center">
+                            <label class="form-label">{{ form.avatar.label }}</label>
+                            <div class="avatar-preview mb-3">
+                                {% if form.avatar.value %}
+                                    <img src="{{ form.avatar.value.url }}" alt="Avatar Preview" 
+                                         class="img-thumbnail rounded-circle" 
+                                         style="width: 120px; height: 120px; object-fit: cover;">
+                                {% else %}
+                                    <div class="avatar-placeholder mx-auto rounded-circle d-flex align-items-center justify-content-center" 
+                                         style="width: 120px; height: 120px; background-color: #f8f9fa; border: 2px dashed #dee2e6;">
+                                        <div class="text-center">
+                                            <i class="fas fa-user fa-2x text-muted mb-2"></i>
+                                            <small class="text-muted d-block">No picture yet</small>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            {{ form.avatar }}
+                            {% if form.avatar.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.avatar.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Username Field -->
+                        <div class="form-group mb-3">
+                            {{ form.username.label_tag }}
+                            {{ form.username }}
+                            {% if form.username.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.username.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Password Fields -->
+                        <div class="form-group mb-3">
+                            {{ form.password1.label_tag }}
+                            {{ form.password1 }}
+                            {% if form.password1.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.password1.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group mb-4">
+                            {{ form.password2.label_tag }}
+                            {{ form.password2 }}
+                            {% if form.password2.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in form.password2.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Non-field errors -->
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger mb-3">
+                                {% for error in form.non_field_errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-login btn-lg">Create Account</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="text-center mt-3">
+                <p>Already have an account? <a href="{% url 'users:login' %}" class="text-decoration-none">Login here</a></p>
+            </div>
+        </div>
+    </div>
 </div>
-<div class="container">
-  <p>Already have an account? <a href="{% url 'users:login' %}">Login</a>
-  </p>
-</div>
+
+<!-- JavaScript for avatar preview -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const avatarInput = document.querySelector('input[type="file"][name="avatar"]');
+    const avatarPreview = document.querySelector('.avatar-preview');
+    
+    if (avatarInput && avatarPreview) {
+        avatarInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    avatarPreview.innerHTML = `
+                        <img src="${e.target.result}" alt="Avatar Preview" 
+                             class="img-thumbnail rounded-circle" 
+                             style="width: 120px; height: 120px; object-fit: cover;">
+                    `;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+});
+</script>
 
 {% endblock %}

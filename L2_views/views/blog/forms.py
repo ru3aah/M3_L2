@@ -2,7 +2,7 @@ from django import forms
 from django.core.validators import MaxLengthValidator, MinLengthValidator
 from django.template.defaultfilters import default
 
-from .models import Post, Author, Category, Comment
+from .models import Post, Category, Comment
 from .validators import validate_spam
 
 
@@ -62,17 +62,13 @@ class PostForm(forms.ModelForm):
 
     class Meta:
         model = Post
-        fields = ['title', 'image', 'content', 'status', 'category',
-                  'author']
+        fields = ['title', 'image', 'content', 'category']
         widgets = {
             'title': forms.TextInput(attrs={
             'class':'form-control'}),
             'image': forms.FileInput(attrs={'class':'form-control'}),
             'content': forms.Textarea(attrs={'class':'form-control'}),
-            'status': forms.Select(attrs={'class':'form-control'},
-                                   choices=Post.STATUS_CHOICES),
             'category': forms.Select(attrs={'class':'form-control'}),
-            'author': forms.Select(attrs={'class':'form-control'}),
         }
         error_messages = {
             'title': {
@@ -85,9 +81,7 @@ class PostForm(forms.ModelForm):
             'title': 'Title:',
             'image': 'Logo:',
             'content': 'Content:',
-            'status': 'Status:',
             'category': 'Category:',
-            'author': 'Author:',
         }
 
 class CommentForm(forms.ModelForm):

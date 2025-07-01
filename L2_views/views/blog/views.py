@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.staticfiles.storage import staticfiles_storage
@@ -5,12 +6,15 @@ from django.db.models import Avg, F
 from django.db.models.aggregates import Count, Min, Max
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, get_object_or_404, render
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, \
     UpdateView, DeleteView
 
 from .forms import ContactForm, PostForm, CommentForm
-from .models import Post, Comment, Author
+from .models import Post, Comment
+
+# Get the User model dynamically
+User = get_user_model()
 
 
 # Create your views here.
@@ -19,14 +23,18 @@ class IndexView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        stats =  Post.objects.aggregate(
+        stats = Post.objects.aggregate(
             total_posts=Count('pk'),
-            average_views = Avg('views'),
-            min_views = Min('views'),
-            max_views = Max('views'),
-            unique_authors = Count('author',distinct=True)
+            average_views=Avg('views'),
+            min_views=Min('views'),
+            max_views=Max('views'),
+            unique_authors=Count('author', distinct=True)
         )
-        stats['average_views'] = round(stats['average_views'], 2)
+        avg_views = stats.get('average_views', 0)
+        if avg_views:
+            avg_views = round(avg_views, 2)
+        stats['average_views'] = avg_views
+        
         context['stats'] = stats
         context['categories'] = Post.objects.values('category__title')
         return context
@@ -36,13 +44,11 @@ class PostDetailView(DetailView):
     template_name = 'blog/post_details.html'
     model = Post
     context_object_name = 'post'
-    pk_url_kwarg = 'id'
 
     def get_queryset(self):
         return Post.objects.annotate(annotaded_views=F('views')+1)
 
-
-    def get_object(self, queryset = None):
+    def get_object(self, queryset=None):
         obj = super().get_object(queryset)
         obj.views = F('views') + 1
         obj.save()
@@ -61,24 +67,28 @@ class PostListView(ListView):
     paginate_by = 9
     ordering = ['-created_at']
 
-    #def get_queryset(self) -> QuerySet:
-    #    return Post.objects.filter(is_published=True)
-    # ordering = ['-created_at']
 
-class PostCreateView(LoginRequiredMixin, CreateView):
+class MessageHandlerFormMixin:
+    pass
+
+
+class PostCreateView(LoginRequiredMixin, CreateView, MessageHandlerFormMixin):
     model = Post
     form_class = PostForm
     template_name = 'blog/post_create.html'
-    #fields = ['title', 'category', 'content', 'author', 'status']
 
-    #success_url = reverse_lazy('blog:post_list')
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        return reverse('blog:post_details', kwargs={'pk': self.object.pk})
 
 
 class PostUpdateView(LoginRequiredMixin, UpdateView):
     model = Post
     form_class = PostForm
     template_name = 'blog/post_edit.html'
-    pk_url_kwarg = 'id'
     
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -87,11 +97,16 @@ class PostUpdateView(LoginRequiredMixin, UpdateView):
                 'files': self.request.FILES,
             })
         return kwargs
+    
+    def get_success_url(self):
+        return reverse('blog:post_details', kwargs={'pk': self.object.pk})
+
 
 class PostDeleteView(LoginRequiredMixin, DeleteView):
     model = Post
     template_name = 'blog/post_delete.html'
     success_url = reverse_lazy('blog:post_list')
+
 
 @login_required
 def create_comment(request: HttpRequest, post_id: int) -> HttpResponse:
@@ -101,45 +116,31 @@ def create_comment(request: HttpRequest, post_id: int) -> HttpResponse:
         if form.is_valid():
             comment = form.save(commit=False)
             comment.post = post
-            comment.author = Author.objects.first()
+            comment.author = request.user
             comment.save()
-            return redirect('blog:post_details', post.id)
-    return redirect('blog:post_details',post.id)
+            return redirect('blog:post_details', pk=post.id)
+    return redirect('blog:post_details', pk=post.id)
+
 
 def contacts(request: HttpRequest) -> HttpResponse:
     print(request.method)
     print(request.user)
     if request.method == 'POST':
-        form=ContactForm(request.POST)
+        form = ContactForm(request.POST)
         if form.is_valid():
             print(form.cleaned_data)
         else:
             print(form.errors)
             form.add_error(None, 'Form is not valid')
-
-    else :
+    else:
         form = ContactForm(request.GET)
 
-    return (render(request, 'blog/contacts.html',
-                  {'form': form}))
+    return render(request, 'blog/contacts.html', {'form': form})
 
-
-class AuthorDetailView(DetailView):
-    model = Author
-    template_name = 'blog/author_detail.html'
-    context_object_name = 'author'
-    pk_url_kwarg = 'pk'
-
-    def get_queryset(self):
-        return super().get_queryset().prefetch_related('posts').annotate(
-            post_count = Count('posts')
-        )
 
 class DeleteCommentView(LoginRequiredMixin, DeleteView):
     model = Comment
     template_name = 'blog/comment_delete.html'
-    pk_url_kwarg = 'id'  # Add this line to match your URL parameter
 
     def get_success_url(self):
-        return reverse_lazy('blog:post_details', kwargs={'id':
-                                                  self.object.post.id})
+        return reverse_lazy('blog:post_details', kwargs={'pk': self.object.post.id})
