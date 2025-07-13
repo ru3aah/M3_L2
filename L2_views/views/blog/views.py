@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin, \
-    PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Avg, F
 from django.db.models.aggregates import Count, Min, Max
 from django.http import HttpRequest, HttpResponse
