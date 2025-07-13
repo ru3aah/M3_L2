@@ -21,11 +21,17 @@ class MessageHandlerFormMixin:
         return kwargs
 
 class IsAuthorMixin(SingleObjectMixin):
-        def dispatch(self, request, *args, **kwargs):
-            object_to_handle=self.get_object()
-            if object_to_handle.author != request.user:
-                raise PermissionDenied
-            return super().dispatch(request, *args, **kwargs)
+    def dispatch(self, request, *args, **kwargs):
+
+        if not request.user.is_authenticated:
+            raise PermissionDenied
+
+        # Check if the current user is the author of the object
+        object_to_handle=self.get_object()
+        if object_to_handle.author != request.user:
+            raise PermissionDenied
+
+        return super().dispatch(request, *args, **kwargs)
 
 
 
