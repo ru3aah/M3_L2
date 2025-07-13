@@ -24,6 +24,7 @@ urlpatterns = [
     path('examples/', include('my_app.urls', namespace='my_app')),
     path('', include('blog.urls', namespace='blog')),
     path('users/', include('users.urls', namespace='users')),
+    path('api/', include('blog.api.urls', namespace='api')),
 ]
 
 # Serve media files during development
