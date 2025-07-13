@@ -5,20 +5,29 @@ from rest_framework.views import APIView
 
 from blog.api.serializers import CommentSerializer
 from blog.models import Comment
+from rest_framework.viewsets import ViewSet, ModelViewSet
 
 
-class CommentApiView(APIView):
-    def get(self, request, *args, **kwargs):
-        if 'id' in kwargs:
-            comments = Comment.objects.filter(post_id=kwargs['id'])
-        else:
-            comments = Comment.objects.all()
-        serializer = CommentSerializer(comments, many=not 'id' in kwargs)
-        return Response(serializer.data)
+# class CommentApiView(APIView):
+#    def get(self, request, *args, **kwargs):
+#        if 'id' in kwargs:
+#            comments = Comment.objects.filter(post_id=kwargs['id'])
+#        else:
+#            comments = Comment.objects.all()
+#        serializer = CommentSerializer(comments, many=not 'id' in kwargs)
+#        return Response(serializer.data)
+#
+#    def post(self, request, *args, **kwargs):
+#        serializer = CommentSerializer(data=request.data)
+#        if serializer.is_valid():
+#            serializer.save()
+#            return Response(serializer.data)
+#        return Response(serializer.errors, status=400)
 
-    def post(self, request, *args, **kwargs):
-        serializer = CommentSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=400)
+
+class CommentApiView(ModelViewSet):
+    model = Comment
+    serializer_class = CommentSerializer
+    queryset = Comment.objects.all()
+
+
