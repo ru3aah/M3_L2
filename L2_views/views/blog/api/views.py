@@ -3,8 +3,8 @@ from rest_framework.views import APIView
 
 
 
-from blog.api.serializers import CommentSerializer
-from blog.models import Comment
+from blog.api.serializers import CommentSerializer, PostSerializer
+from blog.models import Comment, Post
 from rest_framework.viewsets import ViewSet, ModelViewSet
 
 
@@ -30,4 +30,7 @@ class CommentApiView(ModelViewSet):
     serializer_class = CommentSerializer
     queryset = Comment.objects.all()
 
-
+class PostApiView(ModelViewSet):
+    model = Post
+    serializer_class = PostSerializer
+    queryset = Post.objects.all()
