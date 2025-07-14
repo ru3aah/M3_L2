@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from rest_framework.relations import PrimaryKeyRelatedField
+from rest_framework.serializers import ModelSerializer
 
 from ..models import Comment, Category, Tag, Post
 
@@ -7,7 +9,8 @@ from ..models import Comment, Category, Tag, Post
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = '__all__'
+        fields = ('id', 'title')
+        read_only_fields = ('id',)
 
     def validate_title(self, value):
         if len(value) < 3:
@@ -35,16 +38,28 @@ class TagSerializer(serializers.Serializer):
         fields = '__all__'
 
 class PostSerializer(serializers.ModelSerializer):
-    category = CategorySerializer()
-    tags = TagSerializer(many=True)
-    comments = CommentSerializer(many=True)
+    category = PrimaryKeyRelatedField(queryset=Category.objects.all())
+    author = PrimaryKeyRelatedField(queryset=get_user_model().objects.all())
+    tags = TagSerializer(many=True, read_only=True)
+    comments = CommentSerializer(many=True, read_only=True)
 
     class Meta:
         model = Post
-        fields = ('id', 'title', 'content', 'category', 'tags', 'comments',
-                  'created_at', 'updated_at', 'status')
+        fields = ('id', 'author', 'title', 'content', 'category', 'tags',
+                  'comments', 'created_at', 'updated_at', 'status')
         read_only_fields = ('id', 'comments', 'created_at', 'updated_at',
                             'category', 'tags')
 
+    def create(self, validated_data):
+        validated_data['author'] = get_user_model().objects.first()
+        return super().create(validated_data)
+
+class PostListSerializer(serializers.ModelSerializer):
+    #author = PrimaryKeyRelatedField(queryset=get_user_model().objects.all(),
+                                  #  read_only=True)
+    class Meta:
+        model = Post
+        queryset = Post.objects.all()
+        fields = ('id', 'author', 'title', 'status')
 
 

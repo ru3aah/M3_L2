@@ -1,9 +1,11 @@
+from django.contrib.auth import get_user_model
+from rest_framework.generics import ListCreateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 
 
-from blog.api.serializers import CommentSerializer, PostSerializer
+from blog.api.serializers import CommentSerializer, PostSerializer, PostListSerializer
 from blog.models import Comment, Post
 from rest_framework.viewsets import ViewSet, ModelViewSet
 
@@ -32,5 +34,5 @@ class CommentApiView(ModelViewSet):
 
 class PostApiView(ModelViewSet):
     model = Post
-    serializer_class = PostSerializer
+    serializer_class = PostListSerializer
     queryset = Post.objects.all()
