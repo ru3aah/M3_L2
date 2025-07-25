@@ -17,6 +17,7 @@ class CategorySerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Title is too short')
         return value
 
+
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
@@ -32,10 +33,12 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ('content', 'created_at', 'updated_at', 'author')
         read_only_fields = ('created_at', 'updated_at', 'author')
 
+
 class TagSerializer(serializers.Serializer):
     class Meta:
         model = Tag
         fields = '__all__'
+
 
 class PostSerializer(serializers.ModelSerializer):
     category = PrimaryKeyRelatedField(queryset=Category.objects.all())
@@ -50,9 +53,6 @@ class PostSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'comments', 'created_at', 'updated_at',
                             'category', 'tags')
 
-    def create(self, validated_data):
-        validated_data['author'] = get_user_model().objects.first()
-        return super().create(validated_data)
 
 class PostListSerializer(serializers.ModelSerializer):
     #author = PrimaryKeyRelatedField(queryset=get_user_model().objects.all(),
