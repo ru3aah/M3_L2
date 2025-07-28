@@ -20,8 +20,7 @@ from .permissions import IsAuthorOrReadOnly, NoDeletePermission
 from .serializers import CategorySerializer
 from ..models import Category, Comment, Post
 from .serializers import PostSerializer, CommentSerializer, CategorySerializer, PostListSerializer
-
-
+from django_filters.rest_framework import DjangoFilterBackend
 
 # class CommentApiView(APIView):
 #    def get(self, request, *args, **kwargs):
@@ -62,9 +61,10 @@ class PostViewSet(ModelViewSet):
     permission_classes = [IsAuthorOrReadOnly]
     authentication_classes = [JWTAuthentication, SessionAuthentication]
     pagination_class = PostListPagination
+    filter_backends = [DjangoFilterBackend]
 
 
-def perform_create(self, serializer):
+    def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
 
