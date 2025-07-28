@@ -1,26 +1,23 @@
+from django_filters import OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
-from rest_framework.authentication import SessionAuthentication, \
-    TokenAuthentication
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.authtoken.models import Token
-from rest_framework.pagination import PageNumberPagination, CursorPagination
-from rest_framework.viewsets import ViewSet, ModelViewSet
+from rest_framework.filters import SearchFilter
+from rest_framework.viewsets import ModelViewSet
 
-#from blog.models import Comment, Post
-#from blog.api.serializers import (CommentSerializer, PostSerializer, PostListSerializer)
 from django.contrib.auth import authenticate, login
-from rest_framework.generics import ListCreateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly, \
     IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
+from .filters import PostFilter
 from .paginations import CommentPagination, PostListPagination
 from .permissions import IsAuthorOrReadOnly, NoDeletePermission
-from .serializers import CategorySerializer
 from ..models import Category, Comment, Post
 from .serializers import PostSerializer, CommentSerializer, CategorySerializer, PostListSerializer
-from django_filters.rest_framework import DjangoFilterBackend
 
 # class CommentApiView(APIView):
 #    def get(self, request, *args, **kwargs):
@@ -61,7 +58,11 @@ class PostViewSet(ModelViewSet):
     permission_classes = [IsAuthorOrReadOnly]
     authentication_classes = [JWTAuthentication, SessionAuthentication]
     pagination_class = PostListPagination
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['category', 'tags', 'author', 'content']
+    search_fields = ['title', 'content','category__title', 'tags__title']
+    ordering_fields = ['created_at', 'updated_at']
+    ordering = ('-created_at')
 
 
     def perform_create(self, serializer):

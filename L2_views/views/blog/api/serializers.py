@@ -6,7 +6,7 @@ from rest_framework.serializers import ModelSerializer
 from ..models import Comment, Category, Tag, Post
 
 
-class CategorySerializer(serializers.ModelSerializer):
+class CategorySerializer(ModelSerializer):
     class Meta:
         model = Category
         fields = ('id', 'title')
@@ -24,7 +24,7 @@ class AuthorSerializer(serializers.ModelSerializer):
         fields = ('id', 'email', 'username', 'first_name', 'last_name')
 
 
-class CommentSerializer(serializers.ModelSerializer):
+class CommentSerializer(ModelSerializer):
     author = AuthorSerializer()
     #post = serializers.PrimaryKeyRelatedField(read_only=True)
 
@@ -34,13 +34,13 @@ class CommentSerializer(serializers.ModelSerializer):
         read_only_fields = ('created_at', 'updated_at', 'author')
 
 
-class TagSerializer(serializers.Serializer):
+class TagSerializer(ModelSerializer):
     class Meta:
         model = Tag
         fields = '__all__'
 
 
-class PostSerializer(serializers.ModelSerializer):
+class PostSerializer(ModelSerializer):
     category = PrimaryKeyRelatedField(queryset=Category.objects.all())
     author = PrimaryKeyRelatedField(queryset=get_user_model().objects.all())
     tags = TagSerializer(many=True, read_only=True)
@@ -54,7 +54,7 @@ class PostSerializer(serializers.ModelSerializer):
                             'category', 'tags')
 
 
-class PostListSerializer(serializers.ModelSerializer):
+class PostListSerializer(ModelSerializer):
     #author = PrimaryKeyRelatedField(queryset=get_user_model().objects.all(),
                                   #  read_only=True)
     class Meta:
