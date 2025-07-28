@@ -2,10 +2,11 @@ from rest_framework import status
 from rest_framework.authentication import SessionAuthentication, \
     TokenAuthentication
 from rest_framework.authtoken.models import Token
+from rest_framework.pagination import PageNumberPagination, CursorPagination
 from rest_framework.viewsets import ViewSet, ModelViewSet
 
-from blog.models import Comment, Post
-from blog.api.serializers import CommentSerializer, PostSerializer, PostListSerializer
+#from blog.models import Comment, Post
+#from blog.api.serializers import (CommentSerializer, PostSerializer, PostListSerializer)
 from django.contrib.auth import authenticate, login
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly, \
@@ -13,9 +14,13 @@ from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly, \
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
+
+from .paginations import CommentPagination, PostListPagination
 from .permissions import IsAuthorOrReadOnly, NoDeletePermission
 from .serializers import CategorySerializer
-from ..models import Category
+from ..models import Category, Comment, Post
+from .serializers import PostSerializer, CommentSerializer, CategorySerializer, PostListSerializer
+
 
 
 # class CommentApiView(APIView):
@@ -34,6 +39,7 @@ from ..models import Category
 #            return Response(serializer.data)
 #        return Response(serializer.errors, status=400)
 
+
 class CategoryViewSet(ModelViewSet):
     model = Category
     queryset = Category.objects.all()
@@ -46,6 +52,7 @@ class CommentViewSet(ModelViewSet):
     serializer_class = CommentSerializer
     queryset = Comment.objects.all()
     permission_classes = [IsAuthorOrReadOnly]
+    pagination_class = CommentPagination
     
 
 class PostViewSet(ModelViewSet):
@@ -54,9 +61,10 @@ class PostViewSet(ModelViewSet):
     queryset = Post.objects.all()
     permission_classes = [IsAuthorOrReadOnly]
     authentication_classes = [JWTAuthentication, SessionAuthentication]
+    pagination_class = PostListPagination
 
 
-    def perform_create(self, serializer):
+def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
 
