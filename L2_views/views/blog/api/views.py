@@ -9,9 +9,13 @@ from blog.api.serializers import CommentSerializer, PostSerializer, PostListSeri
 from django.contrib.auth import authenticate, login
 from rest_framework.generics import ListCreateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly, \
-    IsAuthenticated
+    IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from .permissions import IsAuthorOrReadOnly, NoDeletePermission
+from .serializers import CategorySerializer
+from ..models import Category
 
 
 # class CommentApiView(APIView):
@@ -30,20 +34,26 @@ from rest_framework.views import APIView
 #            return Response(serializer.data)
 #        return Response(serializer.errors, status=400)
 
+class CategoryViewSet(ModelViewSet):
+    model = Category
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [NoDeletePermission | IsAdminUser]
 
-class CommentApiView(ModelViewSet):
+
+class CommentViewSet(ModelViewSet):
     model = Comment
     serializer_class = CommentSerializer
     queryset = Comment.objects.all()
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthorOrReadOnly]
     
 
-class PostApiView(ModelViewSet):
+class PostViewSet(ModelViewSet):
     model = Post
     serializer_class = PostListSerializer
     queryset = Post.objects.all()
-    permission_classes = [IsAuthenticatedOrReadOnly]
-    authentication_classes = [TokenAuthentication, SessionAuthentication]
+    permission_classes = [IsAuthorOrReadOnly]
+    authentication_classes = [JWTAuthentication, SessionAuthentication]
 
 
     def perform_create(self, serializer):
