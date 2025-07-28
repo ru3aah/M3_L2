@@ -59,6 +59,7 @@ class PostViewSet(ModelViewSet):
     authentication_classes = [JWTAuthentication, SessionAuthentication]
     pagination_class = PostListPagination
     filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_class = PostFilter
     filterset_fields = ['category', 'tags', 'author', 'content']
     search_fields = ['title', 'content','category__title', 'tags__title']
     ordering_fields = ['created_at', 'updated_at']
