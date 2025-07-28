@@ -52,7 +52,6 @@ INSTALLED_APPS = [
     'my_app',
     'blog',
     'users',
-
 ]
 
 MIDDLEWARE = [
@@ -84,7 +83,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
@@ -104,8 +102,6 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.CursorPagination',
     'PAGE_SIZE': 3,
     'DEFAULT_ORDERING': ['-created_at']
-
-
 }
 
 SIMPLE_JWT = {
