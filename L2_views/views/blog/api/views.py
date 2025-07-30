@@ -1,10 +1,8 @@
-from django_filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.generics import RetrieveAPIView, ListAPIView
 from rest_framework.viewsets import ModelViewSet
 
 from django.contrib.auth import authenticate, login
@@ -19,6 +17,8 @@ from .paginations import CommentPagination, PostListPagination
 from .permissions import IsAuthorOrReadOnly, NoDeletePermission
 from ..models import Category, Comment, Post
 from .serializers import PostSerializer, CommentSerializer, CategorySerializer, PostListSerializer
+
+# base level - view
 
 # class CommentApiView(APIView):
 #    def get(self, request, *args, **kwargs):
@@ -36,19 +36,23 @@ from .serializers import PostSerializer, CommentSerializer, CategorySerializer, 
 #            return Response(serializer.data)
 #        return Response(serializer.errors, status=400)
 
+#level 2 - viewset
 
-class CommentDetailAPIView(RetrieveAPIView):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
+# class CommentListAPIView(ListAPIView):
+# class CommentDetailAPIView(RetrieveUpdateDestroyAPIView):
+#     queryset = Comment.objects.all()
+#     serializer_class = CommentSerializer
+#
+#
+# class CommentListCreateAPIView(ListCreateAPIView):
+#     queryset = Comment.objects.all()
+#     serializer_class = CommentSerializer
+#     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+#     ordering_fields = ['created_at', 'updated_at']  # Specify allowed ordering fields
+#     ordering = ['-created_at']  # Default ordering
+#     pagination_class = CommentPagination
 
-
-class CommentListAPIView(ListAPIView):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    ordering_fields = ['created_at', 'updated_at']  # Specify allowed ordering fields
-    ordering = ['-created_at']  # Default ordering
-
+#level 3 - modelviewset
 
 class CategoryViewSet(ModelViewSet):
     model = Category
@@ -82,6 +86,21 @@ class PostViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(author=self.request.user)
+
+    def perform_partial_update(self, serializer):
+        serializer.save(author=self.request.user)
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
+
+
 
 
 class SessionAuthApiView(APIView):
