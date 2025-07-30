@@ -3,7 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.authtoken.models import Token
-from rest_framework.filters import SearchFilter
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import RetrieveAPIView, ListAPIView
 from rest_framework.viewsets import ModelViewSet
 
@@ -45,6 +45,9 @@ class CommentDetailAPIView(RetrieveAPIView):
 class CommentListAPIView(ListAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    ordering_fields = ['created_at', 'updated_at']  # Specify allowed ordering fields
+    ordering = ['-created_at']  # Default ordering
 
 
 class CategoryViewSet(ModelViewSet):
@@ -84,6 +87,7 @@ class PostViewSet(ModelViewSet):
 class SessionAuthApiView(APIView):
     permission_classes = [AllowAny]
 
+
     def post(self, request):
         email = request.data.get('email')
         password = request.data.get('password')
@@ -92,7 +96,6 @@ class SessionAuthApiView(APIView):
                 {'status': 'error',
                  'message': 'Email and password are required'},
                 status=status.HTTP_400_BAD_REQUEST)
-
         user = authenticate(username=email, password=password)
         if not user:
             return Response(
@@ -102,7 +105,6 @@ class SessionAuthApiView(APIView):
                 )
         #session id in cookie
         login(request, user)
-
         return Response({'status': 'success', 'message': 'User logged in'})
 
 
@@ -112,6 +114,7 @@ class SessionAuthApiView(APIView):
             'auth': str(request.auth)
         }
         return Response(content)
+
 
 class TokenAuthView(APIView):
 
@@ -124,7 +127,6 @@ class TokenAuthView(APIView):
                 {'status': 'error',
                  'message': 'Email and password are required'},
                 status=status.HTTP_400_BAD_REQUEST)
-
         user = authenticate(username=email, password=password)
         if not user:
             return Response(
