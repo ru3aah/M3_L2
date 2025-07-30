@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.filters import SearchFilter
+from rest_framework.generics import RetrieveAPIView, ListAPIView
 from rest_framework.viewsets import ModelViewSet
 
 from django.contrib.auth import authenticate, login
@@ -34,6 +35,16 @@ from .serializers import PostSerializer, CommentSerializer, CategorySerializer, 
 #            serializer.save()
 #            return Response(serializer.data)
 #        return Response(serializer.errors, status=400)
+
+
+class CommentDetailAPIView(RetrieveAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+
+
+class CommentListAPIView(ListAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
 
 
 class CategoryViewSet(ModelViewSet):
@@ -103,6 +114,7 @@ class SessionAuthApiView(APIView):
         return Response(content)
 
 class TokenAuthView(APIView):
+
 
     def post(self, request):
         email = request.data.get('email')
